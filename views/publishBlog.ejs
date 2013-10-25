@@ -1,0 +1,75 @@
+<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
+<form id="newBlogForm" method="post">
+<div id="publishBolg">
+	<div>
+		<span>文章标题</span>
+		<input type="text" name="newBlogHead" id="newBlogHead" size="70">
+	</div>
+	<div>
+		<span>文章内容</span>
+		<textarea rows="20" cols="70" id="newBlogContent" name="newBlogContent"></textarea>
+	</div>
+	<div>
+		<span>文章标签</span>
+		<input type="text" name="newBlogTags" id="newBlogTags" size="70">
+	</div>
+	<div>
+		<span>文章分类 [<a href="javascript:void();">编辑分类</a>]</span>
+		<input type="text" name="newBlogCategory" id="newBlogCategory" size="70">
+		<input type="checkbox" value="JS"><label style="font-size:18px;">JS</label>
+		<input type="checkbox" value="CSS"><label style="font-size:18px;">CSS</label>
+		<input type="checkbox" value="HTML"><label style="font-size:18px;">HTML</label>
+	</div>
+	<div>
+		<input type="button" class="blogBtn blogBtn-primary" id="addBlogBtn" value="发表">
+		<input type="reset" class="blogBtn" value="重写">
+		<input type="button" class="blogBtn" value="舍弃">
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+    (function()
+    {
+    	//var publishBolgTag = $('#publishTag');
+    	//publishBolgTag.style.display = 'none';
+        var editor = CKEDITOR.replace( 'newBlogContent',
+	    {
+	        toolbar :
+		    [
+				{ name: 'clipboard', items : ['Undo','Redo' ] },
+	            { name: 'styles', items : [ 'Font','FontSize','Format'] },
+	            { name: 'colors', items : [ 'TextColor','BGColor' ] },
+				{ name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript'] },
+	            { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
+	            { name: 'links', items : [ 'Link'] },
+	            { name: 'insert', items : [ 'Table','HorizontalRule','Smiley','Image' ] },
+				{ name: 'document', items : [ 'Source'] },
+	            { name: 'tools', items : [ 'Maximize'] }
+		    ],
+			uiColor:'#999999',
+            filebrowserImageUploadUrl: '/CKEditorUpload.ashx'
+	    });
+
+	    
+	    $('#addBlogBtn').on('click', function() {
+	    	if(!editor.document.getBody().getText()) {
+	    		alert("请输入留言内容");
+	    		return false;
+	    	}
+	    	/*
+	    	var newBlog = [];
+	    	newBlog = {
+	    		newBlogHead: $("#newBlogHead").val(),
+	    		newBlogTags: $("#newBlogTags").val(),
+	    		newBlogContent: editor.document.getBody().getHtml(),
+	    		newBlogCategory: $("#newBlogCategory").val(),
+	    		publishTime: new Date()
+
+	    	}
+	    	console.log(newBlog);
+	    	*/
+	    	$('#newBlogForm').submit(); 
+	    });
+	    
+    })();
+</script>

@@ -1,0 +1,13 @@
+<% categoryList.forEach(function(category, index) { %>
+	<tr>
+		<td width="30%" style="padding-left:5px;"><%= category.name %></td>
+		<td width="30%" style="text-align:center;"><%= category.num %></td>
+		
+		<% if(user && user.name == bloger) {%>
+			<td width="40%" style="text-align:center;">
+				<a class="categRename" data-name="<%= category.name %>" onclick="renameCateg(this);">重命名</a> | 
+				<a class="categDelete" data-name="<%= category.name %>" onclick="delCateg(this);">删除</a>
+			</td>
+		<% } %>
+	</tr>
+<% }) %>

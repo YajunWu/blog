@@ -1,0 +1,142 @@
+
+<style type="text/css">
+	#contrain{
+		margin:34px auto;
+		width:620px;
+		color:#777777;
+		text-align:center;
+	}
+	#regForm{
+		background-color:#FFFFFF;
+		border:1px solid #DDDDDD;
+		border-radius:6px;
+		padding:10px 40px 40px 30px;
+		margin-bottom:30px;
+		margin-top:30px;
+		text-align:left;
+		line-height:38px;
+		
+	}
+	#regForm .msg{
+		font-size:12px;
+		margin-left:10px;
+	}
+	#regForm .msg.error{
+		color:#FF0000;
+	}
+	#regForm>div.formFiled>label{
+		display:inline-block;
+		width:80px;
+		text-align:right;
+		margin-right:20px;
+	}
+	#regForm>div.formFiled>input[type='text'],
+	#regForm>div.formFiled>input[type='password']{
+		background-color:#EBEBEB;
+		border:1px solid #DEDEDE;
+		padding:10px 10px;
+		margin-top:20px;
+		color:#818181;
+		font-weight:bold;
+		font-size:18px;
+	}
+	div.formFiled .strength{
+		color:#909090;
+		margin-left:105px;
+		margin-top:5px;
+		font-size:12px;
+	}
+	.formFiled .pswd_state{
+		position:relative;
+		display:inline-block;
+		width:124px;
+		margin:0 5px;
+		vertical-align:middle;
+		height:10px;
+		background-color:#ECECEC;
+	}
+	.formFiled .pswd_state .level{
+		display: inline-block;
+	    height: 8px;
+	    left: 1px;
+	    overflow: hidden;
+	    position: absolute;
+	    top: 1px;
+	    width: 40px;
+	}
+	.formFiled .pswd_state .level_0{
+		background-color:#C7C7C7;
+	}
+	.formFiled .pswd_state .level_1{
+		background-color:#A0A0A0;
+		left:42px;
+	}
+	.formFiled .pswd_state .level_2{
+		background-color:#898989;
+		left:83px;
+	}
+	.submit{
+		font-size:16px;
+		margin-top:25px;
+		margin-left:105px;
+	}
+</style>
+
+<% if(success) { %>
+	<div class="alertMsg alertMsg-success">
+		<%= success %>
+	</div>
+<% } %>
+<% if(error) { %>
+	<div  class="alertMsg alertMsg-error">
+		<%= error %>
+	</div>
+<% } %>
+
+<form name="regForm" id="regForm" method="post">
+	<div class="formFiled">
+		<label for="userName">用户名</label>
+		<input type="text" name="userName" id="userName" size="25" />
+		<span class="msg error">用户名不能为空</span>
+	</div>
+	<div class="formFiled">
+		<label for="userMail">邮箱</label>
+		<input type="text" name="userMail" id="userMail" size="25"/>
+		<span class="msg"></span>
+	</div>
+	<div class="formFiled">
+		<label for="userNickname">昵称</label>
+		<input type="text" name="userNickname" id="userNickname" size="25"/>
+		<span class="msg">2-15个汉字或4-30个字符</span>
+	</div>
+	<div class="formFiled">
+		<label for="userPwd">密码</label>
+		<input type="password" name="userPwd" id="userPwd" size="25" />	
+		<span class="msg">6~16位数字、字母或符号</span>
+		<div class="strength">
+			密码强度：弱
+			<span class="pswd_state pswd_state_def">
+				<span class="level level_0"></span>
+				<span class="level level_1"></span>
+				<span class="level level_2"></span>
+			</span> 
+			<span class="pswd_result">强</span>
+		</div>
+	</div>
+	<div class="formFiled">
+		<label for="userRepwd">确认密码</label>
+		<input type="password" name="userRepwd" id="userRepwd" size="25" />	
+		<span class="msg"></span>
+	</div>
+	<div class="formFiled">
+		<label for="vcode">验证码</label>
+		<input type="text" name="vcode" id="vcode" size="10"/>
+		<img style="height:40px;" onclick="hz('4003780');register.fresh_captcha()" src="" class="vcode">
+		<a onclick="hz('4003780');register.fresh_captcha();return false;" href="#">看不清,换一张</a>
+		<span class="msg"></span>
+	</div>
+	<div class="submit">
+	    <input type="submit" name="loginsubmit" id="loginsubmit" value="注 册" />
+	    <span>已有账号？<a href="/login" title="register">登陆</a></span>
+	</div>
+</form>

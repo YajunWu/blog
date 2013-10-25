@@ -1,0 +1,73 @@
+<style type="text/css">
+	#contrain{
+		margin:34px auto;
+		width:440px;
+		color:#777777;
+		text-align:center;
+	}
+	#loginForm{
+		background-color:#FFFFFF;
+		border:1px solid #DDDDDD;
+		border-radius:6px;
+		padding:10px 50px 50px 30px;
+		margin-bottom:30px;
+		margin-top:30px;
+		text-align:left;
+		line-height:38px;
+		
+	}
+	#loginForm>div.formFiled>.field-label{
+		display:none;
+	}
+	#loginForm>div.formFiled>input[type='text'],
+	#loginForm>div.formFiled>input[type='password']{
+		background-color:#EBEBEB;
+		border:1px solid #DEDEDE;
+		padding:10px 10px;
+		margin-top:20px;
+		width:88%;
+		color:#818181;
+		font-weight:bold;
+		font-size:20px;
+	}
+	.forgetmenot, .submit{
+		font-size:18px;
+		margin-top:15px;
+	
+	}
+	.forgetmenot>label{
+		margin-right:25px;
+	}
+	
+</style>
+
+<% if(success) { %>
+	<div class="alertMsg alertMsg-success">
+		<%= success %>
+	</div>
+<% } %>
+<% if(error) { %>
+	<div  class="alertMsg alertMsg-error">
+		<%= error %>
+	</div>
+<% } %>
+
+<form name="loginForm" id="loginForm" method="post">
+	<div class="formFiled">
+		<label for="userName" class="field-label">用户名</label>
+		<input type="text" name="userName" id="userName" placeholder="用户名/邮箱" />
+	</div>
+    <div class="formFiled">
+    	<label for="userPwd" class="field-label">密码</label>
+    	<input type="password" name="userPwd" id="userPwd"  placeholder="密码" />	
+    </div>
+    <div class="forgetmenot">
+         <input name="rememberme" type="checkbox" id="rememberme" value="forever"  />
+		 <label for="rememberme">记住我</label> 
+		 <a href="javascript:void();" title="findPassword">找回密码</a>
+    </div>
+    <div class="submit">
+        <input type="submit" name="loginsubmit" id="loginsubmit" value="登 录" />
+        <span>没有账号？<a href="/reg" title="register">马上注册</a></span>
+    </div>
+</form>

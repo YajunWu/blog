@@ -1,0 +1,67 @@
+<div id="divHome">
+	<% if(user && user.name == bloger) {%>
+		<div class="messageAlert">
+			<span>新留言</span>
+			<div  class="messageContent">
+				<dl class="dlMessage">
+					<dt>
+						<img src="/images/store.jpg" width="96px" height="86px"/>
+						<div class="dtLink"> 
+							<a href="javascript:void();" title="发私信"></a>
+							<a href="javascript:void();" title="加好友"></a>
+						</div>
+					</dt>
+					<dd>
+						<div class="ddContent">
+							<p>很喜欢，加油！</p>
+						</div>
+						<div class="ddBottom">
+							<div>
+							</div>
+							<span>2013-7-22 16:06:37</span>
+							<a href="javascript:void();">回复</a>
+							<a href="javascript:void();">收起回复</a>
+							<br/>
+							<textarea cols="40" rows="2" style=" width:98%; resize:vertical; line-height:30px; min-height:30px; margin:10px 0;"></textarea>
+							<br/>
+							<input type="button" class="blogBtn blogBtn-primary" value="回复" style="float:right; margin-right:2px;">
+						</div>
+					</dd>
+				</dl>
+			</div>
+		</div>
+	<% } %>
+	<% articleList.forEach(function(article, index) { %>			
+		<div class="articleList">
+			<div class="article-title">
+				<a href="/showArticle/<%= bloger %>/<%= article.id%>"><%= article.head %></a>
+			</div>
+			<div class="article-tag">
+				<label>标签：</label>
+				<span><%= article.tags %></span>
+			</div>
+			<div class="article-content">
+				<%- article.content %>
+			</div>
+
+			<div class="article-info">
+				<span class="articleTime"><%= article.publishTime.minute %></span>
+				评论(<%= article.commentNum %>)喜欢(<%= article.likeNum %>)
+			</div>
+		</div>
+    <% }) %>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    	$('#liHome').addClass('active');
+    		/*
+			var contents = $('.articleContent');
+			for(var i = 0; i < contents.length; i++) {
+				$('.articleContent').html(contents[i].text());
+			}
+			$('.articleContent').show();
+			*/
+    });
+    
+</script>

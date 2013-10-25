@@ -1,0 +1,158 @@
+<style type="text/css">
+	#divCateg{
+		font-size:22px;
+		margin:35px 0;
+		padding:35px 40px;
+		background-color:#FFFFFF;
+	}
+	#tabCateg{
+		width:100%;
+		border:none;
+	}
+	#tabCateg>thead{
+		background-color:#E6E6E6
+	}
+	#tabCateg>tbody>tr{
+		font-size:20px;
+		line-height:50px;
+		height:50px;
+		text-align:left;
+	}
+	#tabCateg>tbody>tr>td>a{
+		font-size:20px;
+		text-decoration:none;
+		cursor:pointer;
+	}
+	#tabCateg>tbody>tr>td>a.categDelete{
+		color:#FA0000;
+		
+	}
+</style>
+<div id="divCateg">
+	<div class="messageAlert">
+		<span>类别列表</span>
+		<div class="messageContent">
+			<table id="tabCateg">
+				<thead>
+					<tr>
+						<th style="text-align:left; padding-left:5px;">类别</th>
+						<th>文章</th>
+						<% if(user && user.name == bloger) {%>
+							<th>操作</th>
+						<% } %>
+					</tr>
+				</thead>
+				<tbody>
+					<%- partial('categoryList') %>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<% if(user && user.name == bloger) {%>
+		<div class="messageAlert">
+			<span>添加新类别</span>
+			<div class="messageContent">
+				<input type="text" id="newCateg">
+				<input type="submit" onclick="addCateg();" class="blogBtn blogBtn-primary" value="添加">
+			</div>
+		</div>
+	<% } %>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    	
+    });
+
+    //添加类别
+	function addCateg() {
+		<% if(user && user.name == bloger) {%>
+			var newName = $('#newCateg').val();
+			if(!newName) {
+				alert("请输入类型名");
+				return;
+			}
+			$.ajax({
+				url: "/categories/<%= user.name %>",
+				type: "POST",
+				data: {
+					newCateg: newName
+				},
+				success: function(msg){
+					if(msg == "exist")
+						alert("类型已存在");  
+					else if(msg == "error")
+						alert("添加异常");  
+					else if(msg == "success") {
+						$('#newCateg').val('');
+						$('#tabCateg').append('<tr><td width="30%" style="padding-left:5px;">'+newName+
+							'</td><td width="30%" style="text-align:center;">0</td>'+
+							'<td width="40%" style="text-align:center;">'+
+							'<a class="categRename" data-name="'+newName+
+							'" onclick="renameCateg(this);">重命名</a> | <a class="categDelete" data-name="'+newName+
+							'" onclick="delCateg(this);">删除</a></td></tr>');
+					}  
+				}
+			});
+		<% } %>
+	}
+
+    //删除类别
+	function delCateg(t) {
+		<% if(user) { %>
+			var oA = $(t);
+			if(confirm("确定要删除？ 若删除，该类别下的博文将移到其他类别下。")) {
+	    		$.ajax({
+	    			url: "/categories/<%= user.name %>",
+	    			type: "DELETE",
+	    			data: {
+	    				name: oA.attr('data-name')
+	    			},
+	    			success: function(msg){
+	        			if(msg == "donotexist")
+	    					alert("类型不存在");  
+	    				else if(msg == "error")
+	    					alert("删除异常");
+	    				else if(msg == "success") {
+	    					oA.parentsUntil('tr').parent().remove();
+	    				}
+	        		}
+	    		});
+			}
+		<% } %>
+	}
+
+    //重命名类别
+    function renameCateg(t) {
+    	<% if(user && user.name == bloger) {%>
+	        var oA = $(t);
+			var name = oA.attr('data-name');
+			var newName = prompt("重命名类别", name);
+			if( newName && newName != name) {
+	    		$.ajax({
+	    			url: "/categories/<%= user.name %>",
+	    			type: "PUT",
+	    			data: {
+	    				name: name,
+	    				newName: newName
+	    			},
+	    			success: function(msg){
+	        			if(msg == "exist")
+	    					alert("类型已存在");  
+	    				else if(msg =="error")
+	    					alert("添加异常");
+	    				else if(msg =="donotexist")
+	    					alert("要修改的类型不存在");  
+	    				else if(msg == "success") {
+	    					var nextA = oA.next('a');
+	    					var oTr = oA.parentsUntil('tr').parent();
+	    					oA.attr('data-name', newName);
+	    					nextA.attr('data-name', newName);
+	    					oTr.find('td:first-child').text(newName);
+	    				} 
+	    			}
+	    		});
+			}
+		<% } %>
+	}
+</script>

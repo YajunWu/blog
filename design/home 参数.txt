@@ -1,0 +1,22 @@
+标题 height: 83px;
+	背景：color: #A8E355
+	“荷花池”：font-size: 34,  font-color: #D414D4
+	“你若。。。”: font-size: 14,  font-color: #517607
+	tab块
+		背景：color: #88F663;
+		文本字体：font-size: 20,  font-color: #D414D4
+
+
+主体
+	背景：color: #B1C191
+	左边栏：width: 184px
+		头像：128 x 128
+		“文章分类”：font-size: 18,  font-color: #D414D4
+		链接： font-size: 14,  font-color: #0000FF
+
+	右边栏：width: 737px
+		框框：背景：color: #EDF6E1, width: 731px,  height: 208px
+			文章标题：font-size: 18,  font-color:#035603
+			标签：背景color: #E6E6E6
+
+页脚：height: 39px;

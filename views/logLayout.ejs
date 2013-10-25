@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>小博de乐园</title>
+		<style type="text/css">
+			body{
+				background-color:#EBEBEB;
+				font-size:16px;
+				font-family:Arial;
+				margin:0px;
+				padding:0px;
+				color:#111111;
+			}
+			.submit>input[type='submit']{
+				background-color:#EEA12D;
+				width:150px;
+				line-height:50px;
+				height: 50px;
+				font-weight:bold;
+				text-align:center;
+				color:#FFFFFF;
+				margin-right:25px;
+				font-size:20px;
+				border:none;
+				cursor:pointer;
+			}
+			.alertMsg{
+				font-size: 16px;
+				padding: 10px 20px;
+				margin-bottom: 20px;
+				background-color: #FCF8E3;
+				border: 1px solid #FBEED5;
+				border-radius: 4px;
+			}
+			.alertMsg-success{
+				color: #468847;
+				background-color: #DFF0D8;
+				border-color: #D6E9C6;
+			}
+			.alertMsg-error{
+				color: #B94A48;
+				background-color: #F2DEDE;
+				border-color: #EED3D7;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="contrain">
+			<h1>小博de乐园——<%= title %></h1>
+            <%- body %>
+			<div id="footer">
+				<span>Copyright © yajun Wu 2013   |
+					<a href="#">Contact</a>
+				</span>
+			</div>
+		</div>
+	</body>
+</html>

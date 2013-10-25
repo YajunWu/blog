@@ -1,0 +1,93 @@
+<div class="divInfo" id="showInfo">
+	<dl class="dlInfo">
+		<dt>
+			用户名
+		</dt>
+		<dd>
+			yajun.wu
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			妮名
+		</dt>
+		<dd>
+			荷花池
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			个性签名
+		</dt>
+		<dd>
+			你若盛开，清风自来。心若浮沉，浅笑安然。
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			头像
+		</dt>
+		<dd>
+			
+		</dd>
+	</dl>
+	<% if(user && user.name == bloger) {%>
+		<div style="clear:both; overflow:hidden">
+			<input type="button" id="goModifyInfo" style="float:right"  class="blogBtn blogBtn-primary" value="修改">
+		</div>
+	<% } %>
+</div>
+<div class="divInfo" id="modifyInfo">
+	<dl class="dlInfo">
+		<dt>
+			用户名
+		</dt>
+		<dd>
+			<input type="text" value="yajun.wu">
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			妮名
+		</dt>
+		<dd>
+			<input type="text" value="荷花池">
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			个性签名
+		</dt>
+		<dd>
+			<input type="text" value="你若盛开，清风自来。心若浮沉，浅笑安然。">
+		</dd>
+	</dl>
+	<dl class="dlInfo">
+		<dt>
+			头像
+		</dt>
+		<dd>
+			<input type="button" class="blogBtn" value="新头像">
+			<input type="file">
+		</dd>
+	</dl>
+	<div style="clear:both; background-color:#E6E6E6; padding:10px 160px; margin-top:10px;">
+		<input type="button" style="" class="blogBtn blogBtn-primary" value="保存">
+		<input type="button" id="backInfo"  class="blogBtn" value="返回">
+		
+	</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    	$('#modifyInfo').hide();
+    	$('#liInfo').addClass('active');
+    	$('#goModifyInfo').click(function() {
+    		$('#modifyInfo').show();
+    		$('#showInfo').hide();
+    	});
+    	$('#backInfo').click(function() {
+    		$('#modifyInfo').hide();
+    		$('#showInfo').show();
+    	});
+    });
+</script>

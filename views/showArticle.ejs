@@ -1,0 +1,188 @@
+<style type="text/css">
+	.article{
+		margin:35px 0;
+		padding:35px 40px;
+		background-color:#FFFFFF;
+	}
+	.article>.articleTitle{
+		font-size:34px;
+		font-weight:bolder;
+		text-align:center;
+		line-height:40px;
+		margin-bottom:25px;
+	}
+	.article>.articleContent{
+		line-height:35px;
+		margin:20px 0;
+	}
+	.article>.articleTag{
+		
+		overflow:hidden;
+	}
+	.article>.articleInfo{
+		background-color:#AAAAAA;
+		height:30px;
+		width:100%;
+		padding:10px 0;
+		margin:20px 0;
+		
+	}
+	.commentList{
+		background-color:#E6E6E6;
+		margin:10px 0;
+		padding:10px;
+		overflow:hidden;
+	}
+	.commentList>.commentImg{
+		float:left;
+		width:50px;
+		height:60px;
+		padding-top:5px;
+	}
+	.commentList>.commentInfo{
+		float:left;
+		padding-left:20px;
+		width:520px;
+	}
+	.commentList>.commentInfo>.commentND,
+	.commentList>.commentInfo>.commentDetail{
+		overflow:hidden;
+		line-height:30px;
+	}
+	.commentList>.commentInfo>.commentND>.commentName,
+	.commentList>.commentInfo>.commentDetail>.commentContent{
+		float:left;
+	}
+	.commentList>.commentInfo>.commentND>.commentName>span{
+		font-weight:bold;
+	}
+	.commentList>.commentInfo>.commentND>.commentDate,
+	.commentList>.commentInfo>.commentDetail>.commentReply{
+		float:right;
+	}
+</style>
+
+<div class="article">
+	<div class="articleTitle">
+		<%= article.head %>
+	</div>
+	<div class="articleTag">
+		<div style="float:left;color:#D26900;"><%= article.tags %></div>
+		<div style="float:right; margin-right:2px;"><%= article.publishTime.minute %></div>
+	</div>
+	<div class="articleContent">
+		<%- article.content %>
+	</div>
+	<div class="articleInfo">
+		<div style="float:right; margin-right:2px;"><a href="#">转发</a></div>
+		<div style="float:right; margin-right:12px;"><a href="#">赞</a></div>
+	</div>
+	<div class="articleComments">
+		<div style=" margin-bottom:10px;">评论(<%= article.commentNum %>) 喜欢(<%= article.likeNum %>)</div>
+        <div class="addComment" style="overflow: hidden; margin-bottom:20px;">
+            <div style="float: left; width: 50px; margin-right: 10px;">
+                <img id="uyan_uface" style=" width: 50px; height: 50px;" src="http://uyan.cc/uploads/duface.png">
+            </div>
+            <div style="margin: 0 0 0 60px;">
+                <textarea cols="50" rows="2" style="width:554px; resize:vertical; line-height:30px; min-height:30px; font-size:20px;" placeholder="请输入评论"></textarea>
+                <div id="uyan_stat_btn" style="overflow: hidden; margin-bottom: 5px;">
+					<div id="uyan_smile" title="表情"  style="cursor: pointer; width: 18px; height: 16px; margin-top:6px; float: left; background-image: url(http://v2.uyan.cc/code/images/emotion2.png); ">
+                    </div>
+                    <div style="font-size: 18px; float: right; margin-top: 5px; width: 72px;">
+                        <a id="uyan_cmt_btn" href="#" class="blogBtn blogBtn-primary" style=" float: right;">发&nbsp;&nbsp;布</a>
+                    </div>
+                    <div id="uyan_vis" style="float: right; margin-right: 10px; min-height: 35px; padding-left: 5px; width: 116px;">
+                        <p id="uyan_lb_uname" style="height: 26px; text-indent: 0; margin: 6px 0 0px; width: 100px; padding: 0;">
+                            <input maxlength="20" id="uyan_l_uname" type="text" style="font-size: 18px; height: 32px; line-height: 32px; padding: 0px 8px; width: 100%; vertical-align: top; color: rgb(153, 153, 153); "  placeholder="昵称（必填）">
+							<a title="加入邮箱和网址信息" style="cursor: pointer; background: url('http://v2.uyan.cc/code/images/sorttype.png') no-repeat; width: 10px; height: 5px; display: block; float: right; top: -20px; right: -9px; position: relative;"></a>
+                        </p>
+                        <p id="uyan_lb_email" style="height: 26px; text-indent: 0; margin: 6px 0 0px; width: 100px; display: none; padding: 0;">
+                            <input maxlength="50" id="uyan_l_email" type="text" style="font-size: 18px; height: 32px; line-height: 32px; padding: 0px 8px; width: 100%; vertical-align: top; color: #999999;" value="邮箱">
+                        </p>
+                        <p id="uyan_lb_ulink" style="height: 26px; text-indent: 0; margin: 6px 0 0px; width: 100px; display: none; padding: 0;">
+                            <input maxlength="100" id="uyan_l_ulink" type="text" style="font-size: 18px; height: 32px; line-height: 32px; padding: 0px 8px; width: 100%; vertical-align: top; color: #999999;" value="网址">
+                        </p><input id="uyan_sync" class="uyan_st_sync" type="hidden">
+                    </div>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+				<div style="clear:both;">
+                </div>
+            </div>
+        </div>
+        
+		<div class="commentList">
+			<div class="commentImg">
+				<img src='' alt='头像' width='50' height='50'/>
+			</div>
+			<div class="commentInfo">
+				<div class="commentND">
+					<div class="commentName">
+						<span>李希</span>
+					</div>
+					<div class="commentDate">
+						<span>2013-7-22 16:06:37</span>
+					</div>
+				</div>
+				<div class="commentDetail">
+					<div class="commentContent">
+						<span>好样的，赞一个！</span>
+					</div>
+					<div class="commentReply">
+						<a href="#">回复</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="commentList">
+			<div class="commentImg">
+				<img src='' alt='头像' width='50' height='50'/>
+			</div>
+			<div class="commentInfo">
+				<div class="commentND">
+					<div class="commentName">
+						<span>李希</span>
+					</div>
+					<div class="commentDate">
+						<span>2013-7-22 16:06:37</span>
+					</div>
+				</div>
+				<div class="commentDetail">
+					<div class="commentContent">
+						<span>好样的，赞一个！</span>
+					</div>
+					<div class="commentReply">
+						<a href="#">回复</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="commentList">
+			<div class="commentImg">
+				<img src='/images/girl.jpg' alt='头像' width='50' height='50'/>
+			</div>
+			<div class="commentInfo">
+				<div class="commentND">
+					<div class="commentName">
+						<span>李希</span>
+					</div>
+					<div class="commentDate">
+						<span>2013-7-22 16:06:37</span>
+					</div>
+				</div>
+				<div class="commentDetail">
+					<div class="commentContent">
+						<span>好样的，赞一个！</span>
+					</div>
+					<div class="commentReply">
+						<a href="#">回复</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="commentList" style=" text-align:center;">
+            <a href="#">加载更多</a>
+        </div>
+        
+     </div>
+</div>
