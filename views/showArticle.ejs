@@ -12,7 +12,7 @@
 		margin-bottom:25px;
 	}
 	.article>.articleContent{
-		line-height:35px;
+		/*line-height:35px;*/
 		margin:20px 0;
 	}
 	.article>.articleTag{
@@ -64,11 +64,11 @@
 
 <div class="article">
 	<div class="articleTitle">
-		<%= article.head %>
+		<%= article.title %>
 	</div>
 	<div class="articleTag">
 		<div style="float:left;color:#D26900;"><%= article.tags %></div>
-		<div style="float:right; margin-right:2px;"><%= article.publishTime.minute %></div>
+		<div style="float:right; margin-right:2px;"><%= article.time.minute %></div>
 	</div>
 	<div class="articleContent">
 		<%- article.content %>
@@ -78,7 +78,7 @@
 		<div style="float:right; margin-right:12px;"><a href="#">赞</a></div>
 	</div>
 	<div class="articleComments">
-		<div style=" margin-bottom:10px;">评论(<%= article.commentNum %>) 喜欢(<%= article.likeNum %>)</div>
+		<div style=" margin-bottom:10px;">浏览(<%= article.viewNum %>) | 评论(<%= article.comments.length %>) </div>
         <div class="addComment" style="overflow: hidden; margin-bottom:20px;">
             <div style="float: left; width: 50px; margin-right: 10px;">
                 <img id="uyan_uface" style=" width: 50px; height: 50px;" src="http://uyan.cc/uploads/duface.png">

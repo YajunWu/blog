@@ -73,7 +73,7 @@
 				return;
 			}
 			$.ajax({
-				url: "/categories/<%= user.name %>",
+				url: "/categories/u/<%= user.name %>",
 				type: "POST",
 				data: {
 					newCateg: newName
@@ -103,7 +103,7 @@
 			var oA = $(t);
 			if(confirm("确定要删除？ 若删除，该类别下的博文将移到其他类别下。")) {
 	    		$.ajax({
-	    			url: "/categories/<%= user.name %>",
+	    			url: "/categories/u/<%= user.name %>",
 	    			type: "DELETE",
 	    			data: {
 	    				name: oA.attr('data-name')
@@ -130,7 +130,7 @@
 			var newName = prompt("重命名类别", name);
 			if( newName && newName != name) {
 	    		$.ajax({
-	    			url: "/categories/<%= user.name %>",
+	    			url: "/categories/u/<%= user.name %>",
 	    			type: "PUT",
 	    			data: {
 	    				name: name,

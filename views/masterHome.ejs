@@ -34,7 +34,7 @@
 	<% articleList.forEach(function(article, index) { %>			
 		<div class="articleList">
 			<div class="article-title">
-				<a href="/showArticle/<%= bloger %>/<%= article.id%>"><%= article.head %></a>
+				<a href="/showArticle/u/<%= bloger %>/<%= article.time.day%>/<%= article.title%>"><%= article.title %></a>
 			</div>
 			<div class="article-tag">
 				<label>标签：</label>
@@ -45,8 +45,8 @@
 			</div>
 
 			<div class="article-info">
-				<span class="articleTime"><%= article.publishTime.minute %></span>
-				评论(<%= article.commentNum %>)喜欢(<%= article.likeNum %>)
+				<span class="articleTime"><%= article.time.minute %></span>
+				浏览(<%= article.viewNum %>) | 评论(<%= article.comments.length %>)
 			</div>
 		</div>
     <% }) %>

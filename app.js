@@ -1,31 +1,32 @@
-
 /**
  * Module dependencies.
  */
 
 var express = require('express');
 var routes = require('./routes');
+var path = require('path');
 var MongoStore = require('connect-mongo')(express);
-var settings = require('./settings'); 
+var settings = require('./settings');
 
 var app = module.exports = express.createServer();
 
 // Configuration
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser({ keepExtensions: true, uploadDir: './public/images' }));
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({
-  	secret: settings.cookieSecret,
-  	store: new MongoStore({
-  		db: settings.db
-  	})
+    secret: settings.cookieSecret,
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//30 days
+    store: new MongoStore({
+      db: settings.db
+    })
   }));
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
@@ -35,6 +36,8 @@ app.configure('development', function(){
 app.configure('production', function(){
   app.use(express.errorHandler());
 });
+
+
 
 // Routes
 app.all('/', routes.checkNotLogin);
@@ -51,26 +54,26 @@ app.all('/reg', routes.checkNotLogin);
 app.get('/reg', routes.reg);
 //app.post('/reg', routes.checkNotLogin);
 app.post('/reg',routes.regging);
-app.get('/showArticle/:userName/:articleId', routes.checkUser);
-app.get('/showArticle/:userName/:articleId', routes.showArticle);
+app.get('/showArticle/u/:userName/:day/:title', routes.checkUser);
+app.get('/showArticle/u/:userName/:day/:title', routes.showArticle);
 //app.post('/masterHome', routes.masterHome);
-app.get('/masterHome/:userName', routes.checkUser);
-app.get('/masterHome/:userName', routes.masterHome);
-app.get('/publishBlog/:userName', routes.checkUser);
-app.get('/publishBlog/:userName', routes.publishBlog);
-app.post('/publishBlog/:userName', routes.addBlog);
-app.get('/publishBlog/:userName', routes.publishBlog);
-app.get('/masterStore/:userName', routes.checkUser);
-app.get('/masterStore/:userName', routes.masterStore);
-app.get('/masterMessage/:userName', routes.checkUser);
-app.get('/masterMessage/:userName', routes.masterMessage);
-app.get('/masterInfo/:userName', routes.checkUser);
-app.get('/masterInfo/:userName', routes.masterInfo);
-app.get('/categories/:userName', routes.checkUser);
-app.get('/categories/:userName', routes.categories);
-app.post('/categories/:userName', routes.addCategory);
-app.delete('/categories/:userName', routes.delCategory);
-app.put('/categories/:userName', routes.renameCategory);
+app.get('/masterHome/u/:userName', routes.checkUser);
+app.get('/masterHome/u/:userName', routes.masterHome);
+app.get('/publishBlog/u/:userName', routes.checkUser);
+app.get('/publishBlog/u/:userName', routes.publishBlog);
+app.post('/publishBlog/u/:userName', routes.addBlog);
+app.get('/publishBlog/u/:userName', routes.publishBlog);
+app.get('/masterStore/u/:userName', routes.checkUser);
+app.get('/masterStore/u/:userName', routes.masterStore);
+app.get('/masterMessage/u/:userName', routes.checkUser);
+app.get('/masterMessage/u/:userName', routes.masterMessage);
+app.get('/masterInfo/u/:userName', routes.checkUser);
+app.get('/masterInfo/u/:userName', routes.masterInfo);
+app.get('/categories/u/:userName', routes.checkUser);
+app.get('/categories/u/:userName', routes.categories);
+app.post('/categories/u/:userName', routes.addCategory);
+app.delete('/categories/u/:userName', routes.delCategory);
+app.put('/categories/u/:userName', routes.renameCategory);
 //dynamic view
 app.dynamicHelpers({
   bloger: function(req, res) {

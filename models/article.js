@@ -2,21 +2,20 @@ var mongodb = require('./db');
 var Category = require('../models/category.js');
 var markdown = require('markdown').markdown;
 
-function Article(article) {
-  this.id = article.id;
-  this.author = article.author;
-  this.head = article.head;
-  this.content = article.content;
-  this.publishTime = article.publishTime;
-  this.tags = article.tags;
-  this.commentNum = article.commentNum;
-  this.likeNum = article.likeNum;
-  this.category = article.category;
+function Article(name, title, content, tags, category) {
+  this.name = name;
+  this.title = title;
+  this.content = content;
+  this.tags = tags;
+  this.category = category;
 }
 module.exports = Article;
 
-Article.prototype.save = function save(callback) {
+
+//存储一篇文章及其相关信息
+Article.prototype.save = function(callback) {
   var date = new Date();
+  //存储各种时间格式，方便以后扩展
   var time = {
       date: date,
       year : date.getFullYear(),
@@ -24,296 +23,370 @@ Article.prototype.save = function save(callback) {
       day : date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate(),
       minute : date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes()
   }
-  //存入mongodb的文档
-  var newArticle = {
-    id: this.id,
-    author: this.author,
-    head: this.head,
-    content: this.content,
-    publishTime: time,
-    tags: this.tags,
-    commentNum: this.commentNum,
-    likeNum: this.likeNum,
-    category: this.category
+  //要存入数据库的文档
+  var article = {
+      name: this.name,
+      time: time,
+      title:this.title,
+      tags: this.tags,
+      content: this.content,
+      category: this.category,
+      comments: [],
+      viewNum: 0
   };
-  mongodb.open(function(err, db) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取articles集合
-    db.collection('articles', function(err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //为id属性添加索引
-      collection.ensureIndex('id', {unique: true});
-      //写入article文档
-      collection.insert(newArticle, {safe: true}, function(err) {
+      //将文档插入 articles 集合
+      collection.insert(article, {
+        safe: true
+      }, function (err, result) {
+        if (err) {
+            mongodb.close();
+            return callback(err);
+        }
         var newCategory = new Category({
-          name: newArticle.category,
-          userName: newArticle.author,
+          name: article.category,
+          userName: article.name,
           num: 1
         });
         //检查类别是否存在
         //读取categories集合
         db.collection('categories', function(err, categories) {
-          if (err) {
-            mongodb.close();
-            return callback(err);
-          }
+          
           //查找userName属性为userName的文档
           var query = {};
-          if (newCategory.userName && newCategory.name) {
+          if (newCategory.name) {
             query.userName = newCategory.userName;
             query.name = newCategory.name;
+          
+            categories.findOne(query, function(err, doc) {
+              if (err) {
+                callback(err, null);
+              }         
+              
+              if (doc) {
+                //封装文档为Category对象
+                var curCategory = new Category(doc);
+                //修改category文档
+                categories.update({name:newCategory.name,userName:newCategory.userName},{$set:{num: curCategory.num + 1}}, {safe:true}, function(err,result) {
+                  mongodb.close();
+                  callback(err);
+                });
+                
+              } else {
+                //写入category文档
+                categories.insert(newCategory, {safe: true}, function(err, category) {
+                  mongodb.close();
+                  callback(err);
+                });
+              }
+            });
           }
-          categories.findOne(query, function(err, doc) {
-            if (err) {
-              callback(err, null);
-            }          
-            if (doc) {
-              //封装文档为Category对象
-              var curCategory = new Category(doc);
-              //修改category文档
-              categories.update({name:curCategory.name,userName:curCategory.userName},{$set:{num: curCategory.num + 1}}, {safe:true}, function(err,result) {
-                mongodb.close();
-                callback(err);
-              });
-              
-            } else {
-              //为name属性添加索引
-              categories.ensureIndex('name', {unique: true});
-              //写入category文档
-              
-              categories.insert(newCategory, {safe: true}, function(err, category) {
-                mongodb.close();
-                callback(err);
-              });
-            }
-          });
         });
-        
       });
     });
   });
 };
 
-Article.get = function get(author, callback) {
-  mongodb.open(function(err, db){
+//一次获取十篇文章
+Article.getTen = function(name, page, callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取articles集合
-    db.collection('articles', function(err, collection) {
+    //读取 Articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //查找author属性为author的文档
       var query = {};
-      if (author) {
-      	query.author = author;
+      if (name) {
+        query.name = name;
       }
-      collection.find(query).sort({publishTime: -1}).toArray(function(err, docs) {
+      //使用 count 返回特定查询的文档数 total
+      collection.count(query, function (err, total) {
+        //根据 query 对象查询，并跳过前 (page-1)*10 个结果，返回之后的 10 个结果
+        collection.find(query, {
+          skip: (page - 1)*10,
+          limit: 10
+        }).sort({
+          time: -1
+        }).toArray(function (err, docs) {
+          mongodb.close();
+          if (err) {
+            return callback(err);
+          }
+          // //解析 markdown 为 html
+          // docs.forEach(function (doc) {
+          //   doc.content = markdown.toHTML(doc.content);
+          // });  
+          callback(null, docs, total);
+        });
+      });
+    });
+  });
+};
+
+//获取一篇文章
+Article.getOne = function(name, day, title, callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      //根据用户名、发表日期及文章名进行查询
+      collection.findOne({
+        "name": name,
+        "time.day": day,
+        "title": title
+      }, function (err, doc) {
         mongodb.close();
         if (err) {
-          callback(err, null);
-        }          
-        //封装articles为Article对象
-        var articles = [];
-        docs.forEach(function(doc, index) {
-        	var article = new Article(doc);
-        	articles.push(article);
-          //doc.content = markdown.toHTML(doc.content);
-        });
-        callback(null, articles);
-      });
-    });
-  });
-};
-
-Article.getOne = function getOne(author, articleId, callback) {
-  mongodb.open(function(err, db){
-    if (err) {
-      return callback(err);
-    }
-    //读取articles集合
-    db.collection('articles', function(err, collection) {
-      if (err) {
-        mongodb.close();
-        return callback(err);
-      }
-
-      //查找文档
-      collection.findOne({author:author,id:parseInt(articleId)}, function(err, doc) {
-        mongodb.close();
-        if (doc) {
-          //封装文档为article对象
-          var article = new Article(doc);
-          //doc.content = markdown.toHTML(doc.content);
-          callback(err, article);
-        } else {
-          callback(err, null);
+          return callback(err);
         }
+        // //解析 markdown 为 html
+        // if(doc){
+        //   doc.content = markdown.toHTML(doc.content);
+        //   doc.comments.forEach(function (comment) {
+        //     comment.content = markdown.toHTML(comment.content);
+        //   });
+        // }
+        callback(null, doc);//返回查询的一篇文章
+      });
+      //每访问 1 次，viewNum 值增加 1
+      collection.update({
+        "name": name,
+        "time.day": day,
+        "title": title
+      }, {
+        $inc: {"viewNum": 1}
       });
     });
   });
 };
 
-Article.getMaxId = function getMaxId(callback) {
-  mongodb.open(function(err, db){
+// //返回原始发表的内容（markdown 格式）
+// Article.edit = function(name, day, title, callback) {
+//   //打开数据库
+//   mongodb.open(function (err, db) {
+//     if (err) {
+//       return callback(err);
+//     }
+//     //读取 articles 集合
+//     db.collection('articles', function (err, collection) {
+//       if (err) {
+//         mongodb.close();
+//         return callback(err);
+//       }
+//       //根据用户名、发表日期及文章名进行查询
+//       collection.findOne({
+//         "name": name,
+//         "time.day": day,
+//         "title": title
+//       }, function (err, doc) {
+//         mongodb.close();
+//         if (err) {
+//           return callback(err);
+//         }
+//         callback(null, doc);//返回查询的一篇文章（markdown 格式）
+//       });
+//     });
+//   });
+// };
+
+//更新一篇文章及其相关信息
+Article.update = function(name, day, title, content, callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取articles集合
-    db.collection('articles', function(err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-
-      //查询最大id
-      collection.find().sort({"id" : -1}).limit(1).toArray(function(err, doc) {
+      //更新文章内容
+      collection.update({
+        "name": name,
+        "time.day": day,
+        "title": title
+      },{
+        $set: {content: content}
+      }, function (err, result) {
         mongodb.close();
-        console.log(doc.article);
-        if (doc) {
-          if(doc.length > 0) {
-            
-            //封装文档为article对象
-            var article = new Article(doc[0]);
-            callback(err, article.id);
-          } else {
-            callback(err, 0);
-          }
-        } else {
-          callback(err, null);
+        if (err) {
+          return callback(err);
         }
+        callback(null);
       });
-      
     });
   });
 };
 
-Article.prototype.del = function del(callback) {
-  var id = this.id;
-  var author = this.author;
-  mongodb.open(function(err, db) {
+//删除一篇文章
+Article.remove = function(name, day, title, callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取articles集合
-    db.collection('articles', function(err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //删除article文档
-      collection.remove({id:id,author:author}, {safe:true}, function(err,result) {
+      //根据用户名、日期和标题查找并删除一篇文章
+      collection.remove({
+        "name": name,
+        "time.day": day,
+        "title": title
+      }, function (err, result) {
         mongodb.close();
-        callback(err);
+        if (err) {
+          return callback(err);
+        }
+        callback(null);
       });
     });
   });
 };
 
-Article.prototype.update = function update(newArticle, callback) {
-  var id = this.id;
-  var author = this.author;
-  mongodb.open(function(err, db) {
+//返回所有文章存档信息
+Article.getArchive = function(callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取article集合
-    db.collection('articles', function(err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-
-      //修改article文档
-      collection.update({id:id,author:author},{$set:{head:newArticle.head,content:newArticle.content,tags:newArticle.tags}}, {safe:true}, function(err,result) {
+      //返回只包含 name、time、title 属性的文档组成的存档数组
+      collection.find({}, {
+        "name": 1,
+        "time": 1,
+        "title": 1
+      }).sort({
+        time: -1
+      }).toArray(function (err, docs) {
         mongodb.close();
-        callback(err);
+        if (err) {
+          return callback(err);
+        }
+        callback(null, docs);
       });
     });
   });
 };
 
-Article.prototype.addComment = function addComment(callback) {
-  var id = this.id;
-  var author = this.author;
-  var commentNum = this.commentNum + 1;
-  mongodb.open(function(err, db) {
+//返回所有标签
+Article.getTags = function(callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取article集合
-    db.collection('articles', function(err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-
-      //修改article文档
-      collection.update({id:id,author:author},{$set:{commentNum: commentNum}}, {safe:true}, function(err,result) {
+      //distinct 用来找出给定键的所有不同值
+      collection.distinct("tags.tag", function (err, docs) {
         mongodb.close();
-        callback(err);
+        if (err) {
+          return callback(err);
+        }
+        callback(null, docs);
       });
     });
   });
 };
 
-Article.prototype.addlike = function addlike(callback) {
-  var id = this.id;
-  var author = this.author;
-  var likeNum = this.likeNum + 1;
-  mongodb.open(function(err, db) {
+//返回含有特定标签的所有文章
+Article.getTag = function(tag, callback) {
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取article集合
-    db.collection('articles', function(err, collection) {
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-
-      //修改article文档
-      collection.update({id:id,author:author},{$set:{likeNum: likeNum}}, {safe:true}, function(err,result) {
+      //通过 tags.tag 查询并返回只含有 name、time、title 键的文档组成的数组
+      collection.find({
+        "tags.tag": tag
+      }, {
+        "name": 1,
+        "time": 1,
+        "title": 1
+      }).sort({
+        time: -1
+      }).toArray(function (err, docs) {
         mongodb.close();
-        callback(err);
+        if (err) {
+          return callback(err);
+        }
+        callback(null, docs);
       });
     });
   });
 };
 
-Article.prototype.modifyCategory = function modifyCategory(newCategory,callback) {
-  var id = this.id;
-  var author = this.author;
-  mongodb.open(function(err, db) {
+//返回通过标题关键字查询的所有文章
+Article.search = function(keyword, callback) {
+  mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-
-    //读取article集合
-    db.collection('articles', function(err, collection) {
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-
-      //修改article文档
-      collection.update({id:id,author:author},{$set:{category: newCategory}}, {safe:true}, function(err,result) {
+      var pattern = new RegExp("^.*" + keyword + ".*$", "i");
+      collection.find({
+        "title": pattern
+      }, {
+        "name": 1,
+        "time": 1,
+        "title": 1
+      }).sort({
+        time: -1
+      }).toArray(function (err, docs) {
         mongodb.close();
-        callback(err);
+        if (err) {
+         return callback(err);
+        }
+        callback(null, docs);
       });
     });
   });
 };
+
 

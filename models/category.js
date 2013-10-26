@@ -25,8 +25,6 @@ Category.prototype.save = function save(callback) {
         mongodb.close();
         return callback(err);
       }
-      //为name属性添加索引
-      collection.ensureIndex('name', {unique: true});
       //写入category文档
       collection.insert(category, {safe: true}, function(err, category) {
         mongodb.close();
