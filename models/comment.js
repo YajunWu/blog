@@ -20,8 +20,8 @@ Comment.prototype.save = function(callback) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
-    db.collection('posts', function (err, collection) {
+    //读取 articles 集合
+    db.collection('articles', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
@@ -35,7 +35,8 @@ Comment.prototype.save = function(callback) {
         $push: {"comments": comment}
       } , function (err, result) {
           mongodb.close();
-          callback(null);
+          console(err);
+          callback(err);
       });   
     });
   });

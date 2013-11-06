@@ -31,8 +31,9 @@ Article.prototype.save = function(callback) {
       tags: this.tags,
       content: this.content,
       category: this.category,
-      comments: [],
-      viewNum: 0
+      viewNum: 0,
+      comments: []
+      
   };
   //打开数据库
   mongodb.open(function (err, db) {

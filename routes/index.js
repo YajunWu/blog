@@ -184,14 +184,38 @@ exports.showArticle = function(req, res){
         req.flash('error', err);
         return res.redirect('/masterHome/u/' + req.params.userName);
       }
-      res.render('showArticle', { title: req.params.userName, categoryList: categories, article:article, layout: 'layout' });
+      User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+        res.render('showArticle', { title: req.params.userName, bloghead: user.head, categoryList: categories, article:article, layout: 'layout' });
+      });
     });
   })
 };
 
+exports.addComment = function (req, res) {
+    var date = new Date(),
+        time = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
+
+    var comment = {
+        name: req.body.name,
+        head: req.body.head,
+        time: time,
+        content: req.body.content
+    };
+    var newComment = new Comment(req.params.userName, req.params.day, req.params.title, comment);
+    newComment.save(function (err) {
+      if (err) {
+        req.flash('error', err); 
+      }
+      return res.send('success');
+    });
+  };
+
 exports.masterHome = function(req, res){
   var page = req.query.p ? parseInt(req.query.p) : 1;
-
   Category.get(req.params.userName, function(err, categories) {
     if(err) {
       req.flash('error', err);
@@ -199,12 +223,16 @@ exports.masterHome = function(req, res){
     }
     Article.getTen(req.params.userName, page, function(err, articles) {
       if(err) {
-        req.flash('error', err);
+        req.flash('error', err);      
         return res.redirect('/login');
       }
-
-      res.render('masterHome', { title: req.params.userName, categoryList: categories, articleList: articles, layout: 'layout' });
-    
+      User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+        res.render('masterHome', { title: req.params.userName, bloghead: user.head, categoryList: categories, articleList: articles, layout: 'layout' });
+      });
     });
   });
 };
@@ -215,8 +243,14 @@ exports.publishBlog = function(req, res){
       req.flash('error', err);
       return res.redirect('/masterHome/u/' + req.params.userName);
     }
-    res.render('publishBlog', { title: req.params.userName, categoryList: categories, layout: 'layout' });
-  })
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+    res.render('publishBlog', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+    });
+  });
 };
 
 exports.addBlog = function(req, res){
@@ -232,10 +266,15 @@ exports.addBlog = function(req, res){
   newBlog.save(function(err) {
     if (err) {
       req.flash('error', err);
-
       return res.redirect('/publishBlog/u/' + req.params.userName);
     };
-    res.redirect('/showArticle/u/' + req.params.userName + '/' + now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + '/' + req.body.newBlogHead);
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+       res.redirect('/showArticle/u/' + req.params.userName + '/' + now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + '/' + req.body.newBlogHead);
+    });
   }); 
 };
 
@@ -246,8 +285,14 @@ exports.masterStore = function(req, res){
 
       return res.redirect('/masterHome/u/' + req.params.userName);
     }
-    res.render('masterStore', { title: req.params.userName, categoryList: categories, layout: 'layout' });
-  })
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+    res.render('masterStore', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+    });
+  });
 };
 
 exports.masterMessage = function(req, res){
@@ -256,8 +301,14 @@ exports.masterMessage = function(req, res){
       req.flash('error', err);
       return res.redirect('/masterHome/u/' + req.params.userName);
     }
-    res.render('masterMessage', { title: req.params.userName, categoryList: categories, layout: 'layout' });
-  })
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+    res.render('masterMessage', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+    });
+  });
 };
 
 exports.masterInfo = function(req, res){
@@ -266,8 +317,14 @@ exports.masterInfo = function(req, res){
       req.flash('error', err);
       return res.redirect('/masterHome/u/' + req.params.userName);
     }
-    res.render('masterInfo', { title: req.params.userName, categoryList: categories, layout: 'layout' });
-  })
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+    res.render('masterInfo', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+    });
+  });
 };
 
 /*
@@ -368,8 +425,14 @@ exports.categories = function(req, res){
       req.flash('error', err);
       return res.redirect('/masterHome/u/' + req.params.userName);
     }
-    res.render('categories', { title: req.params.userName, categoryList: categories, layout: 'layout' });
-  })
+    User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }
+    res.render('categories', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+    });
+  });
   
 };
 

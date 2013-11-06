@@ -56,6 +56,7 @@ app.get('/reg', routes.reg);
 app.post('/reg',routes.regging);
 app.get('/showArticle/u/:userName/:day/:title', routes.checkUser);
 app.get('/showArticle/u/:userName/:day/:title', routes.showArticle);
+app.post('/showArticle/u/:userName/:day/:title', routes.addComment);
 //app.post('/masterHome', routes.masterHome);
 app.get('/masterHome/u/:userName', routes.checkUser);
 app.get('/masterHome/u/:userName', routes.masterHome);
