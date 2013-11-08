@@ -79,9 +79,9 @@
 		</div>
 		<div id="rightBody">
 			<div id="userInfo">
-				<img src="/<%= bloghead %>" alt="<%= title%>" width="98%" height="180px"/>
+				<img src="/<%= blogInfo.head %>" alt="<%= blogInfo.name%>" width="98%" height="180px"/>
 				<br/>
-				<span><b><%= title%></b></span>
+				<span><b><%= blogInfo.name%></b></span>
 				<br/></br/>
 				<span>访问：11111次</span>
 			</div>
@@ -91,7 +91,9 @@
 					搜索
 				</div>
 				<div class="statLink-content">
-					
+					<form action="/search/u/<%=blogInfo.name %>" method="GET">
+						<input type="text" name="keyword" placeholder="轻击ENTER进行搜索" class="search" />
+					</form>
 				</div>
 			</div>
 			
@@ -101,27 +103,11 @@
 				</div>
 				<div class="statLink-content">
 					<div id="divTagCloud">
-						<a href="http://www.miaov.com">JS课程</a>
-						<a href="http://www.miaov.com/course_outline_1.html.php">教程</a>
-						<a href="http://www.miaov.com">试听</a>
-						<a href="http://www.miaov.com">精品</a>
-						<a href="http://www.miaov.com">妙味课堂</a>
-						<a href="http://blog.miaov.com/722.html">SEO</a>
-						<a href="http://www.miaov.com" class="red">特效</a>
-						<a href="http://www.miaov.com/course.html.php">JavaScript</a>
-						<a href="http://www.miaov.com/course_detail_1.html.php">miaov</a>
-						<a href="http://www.miaov.com/course_detail_2.html.php">CSS</a>
-						<a href="http://www.miaov.com/course_detail_3.html.php">求职</a>
-						<a href="http://www.miaov.com/course_detail_2.html.php">面试题</a>
-						<a href="http://www.miaov.com/contact.html.php">继承</a>
-						<a href="http://www.miaov.com/">妙味课堂</a>
-						<a href="http://www.miaov.com/about.html.php">OOP</a>
-						<a href="http://www.miaov.com/work.html.php">XHTML</a>
-						<a href="http://www.miaov.com/message.html.php">setInterval</a>
-						<a href="http://blog.miaov.com/">W3C</a>
-						<a href="http://blog.miaov.com/716.html">石川</a>
-						<a href="http://www.miaov.com/">妙味课堂</a>
-						<a href="http://blog.miaov.com/676.html">blue</a>
+						<% if (tags) { %>
+							<% tags.forEach(function(tag, index) { %>
+							    <a href="/tags/<%= tag %>"><%= tag %></a>
+							<% }) %>
+						<% } %>
 					</div>
 				</div>
 			</div>

@@ -304,7 +304,7 @@ Article.getArchive = function(callback) {
 };
 
 //返回所有标签
-Article.getTags = function(callback) {
+Article.getTags = function(userName, callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -317,7 +317,7 @@ Article.getTags = function(callback) {
         return callback(err);
       }
       //distinct 用来找出给定键的所有不同值
-      collection.distinct("tags.tag", function (err, docs) {
+      collection.find({"name":userName},{tags: 1}).toArray(function (err, docs) {
         mongodb.close();
         if (err) {
           return callback(err);
@@ -373,10 +373,6 @@ Article.search = function(keyword, callback) {
       var pattern = new RegExp("^.*" + keyword + ".*$", "i");
       collection.find({
         "title": pattern
-      }, {
-        "name": 1,
-        "time": 1,
-        "title": 1
       }).sort({
         time: -1
       }).toArray(function (err, docs) {

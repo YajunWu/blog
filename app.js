@@ -54,6 +54,8 @@ app.all('/reg', routes.checkNotLogin);
 app.get('/reg', routes.reg);
 //app.post('/reg', routes.checkNotLogin);
 app.post('/reg',routes.regging);
+app.get('/search/u/:userName', routes.checkUser);
+app.get('/search/u/:userName', routes.search);
 app.get('/showArticle/u/:userName/:day/:title', routes.checkUser);
 app.get('/showArticle/u/:userName/:day/:title', routes.showArticle);
 app.post('/showArticle/u/:userName/:day/:title', routes.addComment);

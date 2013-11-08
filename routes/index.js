@@ -104,11 +104,16 @@ module.exports = function(app) {
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: req.params.userName });
+  res.render('index', { 
+    title: req.params.userName 
+  });
 };
 
 exports.login = function(req, res){
-  res.render('login', { title: '登录', layout: 'logLayout' });
+  res.render('login', { 
+    title: '登录', 
+    layout: 'logLayout' 
+  });
 };
 
 exports.loginning = function(req, res){
@@ -137,7 +142,10 @@ exports.logout = function(req, res) {
 }
 
 exports.reg = function(req, res){
-  res.render('reg', { title: '注册', layout: 'logLayout' });
+  res.render('reg', { 
+    title: '注册', 
+    layout: 'logLayout' 
+  });
 };
 
 exports.regging = function(req, res){
@@ -174,81 +182,96 @@ exports.regging = function(req, res){
 };
 
 exports.showArticle = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
+  getGlobalData(req, res, function(categories, tags, user){
+    //获取文章信息
     Article.getOne(req.params.userName, req.params.day, req.params.title, function(err, article) {
       if(err || (article == null)) {
         req.flash('error', err);
         return res.redirect('/masterHome/u/' + req.params.userName);
       }
-      User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-        res.render('showArticle', { title: req.params.userName, bloghead: user.head, categoryList: categories, article:article, layout: 'layout' });
+      //数据传递给模板视图
+      res.render('showArticle', { 
+        title: req.params.userName, 
+        blogInfo: user, 
+        categoryList: categories, 
+        tags: tags,
+        article:article, 
+        layout: 'layout' 
       });
     });
-  })
+  });
 };
 
 exports.addComment = function (req, res) {
-    var date = new Date(),
-        time = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
+  var date = new Date(),
+      time = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
 
-    var comment = {
-        name: req.body.name,
-        head: req.body.head,
-        time: time,
-        content: req.body.content
-    };
-    var newComment = new Comment(req.params.userName, req.params.day, req.params.title, comment);
-    newComment.save(function (err) {
+  var comment = {
+      name: req.body.name,
+      head: req.body.head,
+      time: time,
+      content: req.body.content
+  };
+  var newComment = new Comment(req.params.userName, req.params.day, req.params.title, comment);
+  newComment.save(function (err) {
+    if (err) {
+      req.flash('error', err); 
+    }
+    return res.send('success');
+  });
+};
+
+exports.search = function (req, res) {
+  getGlobalData(req, res, function(categories, tags, user){
+    //根据关键字获取文章
+    Article.search(req.query.keyword, function (err, articles) {
       if (err) {
         req.flash('error', err); 
+        return res.redirect('/');
       }
-      return res.send('success');
+      res.render('masterHome', {
+        title: "SEARCH:" + req.query.keyword,
+        blogInfo: user, 
+        categoryList: categories,
+        tags: tags, 
+        articleList: articles, 
+        layout: 'layout' 
+      });
     });
-  };
+  });
+};
 
 exports.masterHome = function(req, res){
   var page = req.query.p ? parseInt(req.query.p) : 1;
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/login');
-    }
+  getGlobalData(req, res, function(categories, tags, user){
+    //分页获取文章
     Article.getTen(req.params.userName, page, function(err, articles) {
       if(err) {
         req.flash('error', err);      
         return res.redirect('/login');
       }
-      User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-        res.render('masterHome', { title: req.params.userName, bloghead: user.head, categoryList: categories, articleList: articles, layout: 'layout' });
+      //数据传递给模板视图
+      res.render('masterHome', {
+        title: req.params.userName, 
+        blogInfo: user, 
+        categoryList: categories, 
+        tags: tags,
+        articleList: articles, 
+        layout: 'layout' 
       });
     });
   });
 };
 
 exports.publishBlog = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
-    User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-    res.render('publishBlog', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+  getGlobalData(req, res, function(categories, tags, user){
+    //数据传递给模板视图
+    res.render('publishBlog', { 
+      title: req.params.userName, 
+      blogInfo: user, 
+      categoryList: categories, 
+      tags: tags,
+      layout: 'layout' 
     });
   });
 };
@@ -279,50 +302,40 @@ exports.addBlog = function(req, res){
 };
 
 exports.masterStore = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
-    User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-    res.render('masterStore', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+  getGlobalData(req, res, function(categories, tags, user){
+    //数据传递给模板视图
+    res.render('masterStore', { 
+      title: req.params.userName, 
+      blogInfo: user, 
+      categoryList: categories, 
+      tags: tags,
+      layout: 'layout' 
     });
   });
 };
 
 exports.masterMessage = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
-    User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-    res.render('masterMessage', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+  getGlobalData(req, res, function(categories, tags, user){
+    //数据传递给模板视图
+    res.render('masterMessage', { 
+      title: req.params.userName, 
+      blogInfo: user, 
+      categoryList: categories,
+      tags: tags, 
+      layout: 'layout' 
     });
   });
 };
 
 exports.masterInfo = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
-    User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-    res.render('masterInfo', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+  getGlobalData(req, res, function(categories, tags, user){
+    //数据传递给模板视图
+    res.render('masterInfo', { 
+      title: req.params.userName, 
+      blogInfo: user, 
+      categoryList: categories, 
+      tags: tags,
+      layout: 'layout' 
     });
   });
 };
@@ -420,20 +433,16 @@ exports.renameCategory = function(req, res){
 };
 
 exports.categories = function(req, res){
-  Category.get(req.params.userName, function(err, categories) {
-    if(err) {
-      req.flash('error', err);
-      return res.redirect('/masterHome/u/' + req.params.userName);
-    }
-    User.get(req.params.userName, function(err, user) {
-        if(err){
-          req.flash('error', err);
-          return res.redirect('/login');
-        }
-    res.render('categories', { title: req.params.userName, bloghead: user.head, categoryList: categories, layout: 'layout' });
+  getGlobalData(req, res, function(categories, tags, user){
+    //数据传递给模板视图
+    res.render('categories', { 
+      title: req.params.userName, 
+      blogInfo: user, 
+      categoryList: categories, 
+      tags: tags,
+      layout: 'layout' 
     });
   });
-  
 };
 
 exports.checkLogin = function(req, res, next){
@@ -468,4 +477,62 @@ exports.checkUser = function(req, res, next) {
       next();
     }
   });
+}
+
+/**********************************************************/
+//获取模板页面所需公共数据
+var getGlobalData = function(req, res, Func) {
+  //获取文章分类
+  Category.get(req.params.userName, function(err, categories) {
+    if(err) {
+      req.flash('error', err);
+      return res.redirect('/masterHome/u/' + req.params.userName);
+    }
+    //获取标签
+    Article.getTags(req.params.userName, function(err, articleTags) {
+      if(err){
+        req.flash('error', err);
+        return res.redirect('/login');
+      }
+      var tags = getUniqueTags(articleTags);
+      //获取博主信息
+      User.get(req.params.userName, function(err, user) {
+        if(err){
+          req.flash('error', err);
+          return res.redirect('/login');
+        }       
+        Func(categories, tags, user);
+      });
+    });
+  });
+}
+
+/**********************************************************/
+//去掉标签中的重复标签
+//标签数组中每个元素都是字符串，标签以逗号隔开
+var getUniqueTags = function(articleTags){
+  var tags = [];
+  articleTags.forEach(function(articleTag, index) {
+    if(articleTag){
+      tags = tags.concat(articleTag.tags.split(','));
+    }
+  });
+  if(tags) {
+    tags = tags.unique();
+  }
+  return tags;
+}
+
+/**********************************************************/
+//数组去掉重复项
+Array.prototype.unique = function() {
+  var res = [], hash = {};
+  for(var i=0, elem; (elem = this[i]) != null; i++)  {
+    if (!hash[elem])
+    {
+      res.push(elem);
+      hash[elem] = true;
+    }
+  }
+  return res;
 }
