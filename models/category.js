@@ -173,3 +173,25 @@ Category.prototype.add = function add(callback) {
     });
   });
 };
+
+Category.minus = function(userName, name, callback) {
+  mongodb.open(function(err, db) {
+    if (err) {
+      return callback(err);
+    }
+
+    //读取categories集合
+    db.collection('categories', function(err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+
+      //修改category文档
+      collection.update({name:name,userName:userName},{$inc:{num:-1}}, {safe:true}, function(err,result) {
+        mongodb.close();
+        callback(err);
+      });
+    });
+  });
+};

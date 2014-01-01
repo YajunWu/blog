@@ -34,19 +34,37 @@
 	<% articleList.forEach(function(article, index) { %>			
 		<div class="articleList">
 			<div class="article-title">
-				<a href="/showArticle/u/<%= bloger %>/<%= article.time.day%>/<%= article.title%>"><%= article.title %></a>
+				
+				<% if(user && user.name === bloger) { %>
+					<div style="float:right; font-weight:normal; font-size:16px;">
+						<a href="#">编辑</a>|
+						<a onclick="">修改分类</a>|
+						<a data-name="<%= article.time.minute %>" onclick="removeArticle(this);">删除</a>
+					</div>
+				<% } %>
+				<div style="width:550px; font-size:22px; text-overflow:ellipsis; overflow:hidden;">
+					<a href="/showArticle/u/<%= bloger %>/<%= article.time.minute%>" >
+						<%= article.title %>
+					</a>
+				</div>
 			</div>
 			<div class="article-tag">
 				<label>标签：</label>
 				<span><%= article.tags %></span>
+				<div style="float:right;">
+					(分类：<span><%= article.category %></span>)
+				</div>
 			</div>
 			<div class="article-content">
-				<%- article.content %>
+				<%= article.abstract %>
+				<% if(article.abstract.length >= 195) { %>...<% } %>
 			</div>
 
 			<div class="article-info">
 				<span class="articleTime"><%= article.time.minute %></span>
-				浏览(<%= article.viewNum %>) | 评论(<%= article.comments.length %>)
+				<div style="float:right">
+					浏览(<%= article.viewNum %>) | 评论(<%= article.comments.length %>)
+				</div>
 			</div>
 		</div>
     <% }) %>
@@ -63,5 +81,30 @@
 			$('.articleContent').show();
 			*/
     });
+
+    function removeArticle(article) {
+    	<% if(user && user.name === bloger) { %>
+			var oA = $(article);
+			if(confirm("确定要删除？ 若删除，则无法恢复。")) {
+	    		$.ajax({
+	    			url: "/masterHome/u/<%= user.name %>",
+	    			type: "DELETE",
+	    			data: {
+	    				minute: oA.attr('data-name')
+	    			},
+	    			success: function(msg){
+	        			if(msg === "donotexist")
+	    					alert("文章不存在");  
+	    				else if(msg === "error")
+	    					alert("删除异常");
+	    				else if(msg === "success") {
+	    					//oA.parentsUntil('div.articleList').parent().remove();
+	    					window.location.href="/masterHome/u/<%= user.name %>";
+	    				}
+	        		}
+	    		});
+			}
+		<% } %>
+    }
     
 </script>

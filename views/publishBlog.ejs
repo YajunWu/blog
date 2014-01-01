@@ -7,7 +7,7 @@
 	</div>
 	<div>
 		<span>文章内容</span>
-		<textarea rows="20" cols="70" id="newBlogContent" name="newBlogContent"></textarea>
+		<textarea rows="80" cols="70" id="newBlogContent" name="newBlogContent"></textarea>
 	</div>
 	<div>
 		<span>文章标签</span>
@@ -34,6 +34,8 @@
     	//publishBolgTag.style.display = 'none';
         var editor = CKEDITOR.replace( 'newBlogContent',
 	    {
+	    	height:450,
+	    	width:700,
 	        toolbar :
 		    [
 				{ name: 'clipboard', items : ['Undo','Redo' ] },
@@ -53,9 +55,14 @@
 	    
 	    $('#addBlogBtn').on('click', function() {
 	    	if(!editor.document.getBody().getText()) {
-	    		alert("请输入留言内容");
+	    		alert("请输入内容");
 	    		return false;
 	    	}
+
+		    while($('#newBlogTags').val().indexOf("，")!=-1)//寻找每一个中文逗号，并替换
+		    {
+		        $('#newBlogTags').val($('#newBlogTags').val().replace("，",","));
+		    }
 	    	/*
 	    	var newBlog = [];
 	    	newBlog = {

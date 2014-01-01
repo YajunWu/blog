@@ -184,7 +184,8 @@ exports.regging = function(req, res){
 exports.showArticle = function(req, res){
   getGlobalData(req, res, function(categories, tags, user){
     //获取文章信息
-    Article.getOne(req.params.userName, req.params.day, req.params.title, function(err, article) {
+    //var minute = ;
+    Article.getOne(req.params.userName, req.params.minute, function(err, article) {
       if(err || (article == null)) {
         req.flash('error', err);
         return res.redirect('/masterHome/u/' + req.params.userName);
@@ -200,6 +201,48 @@ exports.showArticle = function(req, res){
       });
     });
   });
+};
+
+exports.delArticle = function (req, res) {
+  Article.getOne(req.params.userName, req.body.minute, function(err, article) {
+      if(err || !article) {
+        return res.send('donotexist');
+      }
+      //如果存在则删除文章
+      Article.remove(req.params.userName, req.body.minute, function(err) {
+        if (err) {
+          return res.send('error');
+        }
+        var minusCategory = new Category({
+          name: article.category,
+          userName: req.params.userName,
+          num: 0
+        });
+        Category.findOne(minusCategory, function(err, category) {
+          if(err) {
+            return res.send('error');
+          }
+
+          if(category.num >1) {
+            Category.minus(req.params.userName,article.category, function(err) {
+              if (err) {
+                return res.send('error');
+              }
+              return res.send('success');
+            });
+          } else {
+            minusCategory.del(function(err) {
+              if (err) {
+                return res.send('error');
+              }
+              return res.send('success');
+            });
+          }
+          
+        });
+        
+      });
+    });
 };
 
 exports.addComment = function (req, res) {
@@ -278,14 +321,18 @@ exports.publishBlog = function(req, res){
 
 exports.addBlog = function(req, res){
   var now = new Date();
+  var abstract = req.body.newBlogContent.replace(/<\/?[^>]*>/g,'');
+  if(abstract.length >220) {
+    abstract = abstract.slice(0,200);
+  }
   var newBlog = new Article(
     req.params.userName,
     req.body.newBlogHead,
     req.body.newBlogContent,
+    abstract,
     req.body.newBlogTags,
     req.body.newBlogCategory
   );
-
   newBlog.save(function(err) {
     if (err) {
       req.flash('error', err);
@@ -296,7 +343,7 @@ exports.addBlog = function(req, res){
           req.flash('error', err);
           return res.redirect('/login');
         }
-       res.redirect('/showArticle/u/' + req.params.userName + '/' + now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + '/' + req.body.newBlogHead);
+       res.redirect('/showArticle/u/' + req.params.userName + '/' + now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + "%20" + now.getHours() + ":" + now.getMinutes());
     });
   }); 
 };
@@ -510,6 +557,7 @@ var getGlobalData = function(req, res, Func) {
 /**********************************************************/
 //去掉标签中的重复标签
 //标签数组中每个元素都是字符串，标签以逗号隔开
+
 var getUniqueTags = function(articleTags){
   var tags = [];
   articleTags.forEach(function(articleTag, index) {
@@ -536,3 +584,5 @@ Array.prototype.unique = function() {
   }
   return res;
 }
+
+/***********************************************************/

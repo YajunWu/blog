@@ -99,7 +99,7 @@
 
     //删除类别
 	function delCateg(t) {
-		<% if(user) { %>
+		<% if(user && user.name === bloger) { %>
 			var oA = $(t);
 			if(confirm("确定要删除？ 若删除，该类别下的博文将移到其他类别下。")) {
 	    		$.ajax({

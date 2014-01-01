@@ -1,11 +1,12 @@
 var mongodb = require('./db');
 var Category = require('../models/category.js');
-var markdown = require('markdown').markdown;
 
-function Article(name, title, content, tags, category) {
+
+function Article(name, title, content, abstract, tags, category) {
   this.name = name;
   this.title = title;
   this.content = content;
+  this.abstract = abstract;
   this.tags = tags;
   this.category = category;
 }
@@ -30,6 +31,7 @@ Article.prototype.save = function(callback) {
       title:this.title,
       tags: this.tags,
       content: this.content,
+      abstract: this.abstract,
       category: this.category,
       viewNum: 0,
       comments: []
@@ -128,10 +130,10 @@ Article.getTen = function(name, page, callback) {
           if (err) {
             return callback(err);
           }
-          // //解析 markdown 为 html
-          // docs.forEach(function (doc) {
-          //   doc.content = markdown.toHTML(doc.content);
-          // });  
+
+          docs.forEach(function(doc) {
+            delete doc.content;
+          });
           callback(null, docs, total);
         });
       });
@@ -140,7 +142,7 @@ Article.getTen = function(name, page, callback) {
 };
 
 //获取一篇文章
-Article.getOne = function(name, day, title, callback) {
+Article.getOne = function(name, minute, callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -155,8 +157,7 @@ Article.getOne = function(name, day, title, callback) {
       //根据用户名、发表日期及文章名进行查询
       collection.findOne({
         "name": name,
-        "time.day": day,
-        "title": title
+        "time.minute": minute
       }, function (err, doc) {
         mongodb.close();
         if (err) {
@@ -174,8 +175,7 @@ Article.getOne = function(name, day, title, callback) {
       //每访问 1 次，viewNum 值增加 1
       collection.update({
         "name": name,
-        "time.day": day,
-        "title": title
+        "time.minute": minute,
       }, {
         $inc: {"viewNum": 1}
       });
@@ -244,7 +244,7 @@ Article.update = function(name, day, title, content, callback) {
 };
 
 //删除一篇文章
-Article.remove = function(name, day, title, callback) {
+Article.remove = function(name, minute, callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -259,8 +259,7 @@ Article.remove = function(name, day, title, callback) {
       //根据用户名、日期和标题查找并删除一篇文章
       collection.remove({
         "name": name,
-        "time.day": day,
-        "title": title
+        "time.minute": minute
       }, function (err, result) {
         mongodb.close();
         if (err) {

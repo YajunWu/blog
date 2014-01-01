@@ -3,19 +3,20 @@
 		margin:35px 0;
 		padding:35px 40px;
 		background-color:#FFFFFF;
+		font-size: 16px;
 	}
-	.article>.articleTitle{
-		font-size:34px;
+	.article .articleTitle{
+		font-size:24px;
 		font-weight:bolder;
 		text-align:center;
-		line-height:40px;
-		margin-bottom:25px;
+		line-height:30px;
+		margin:10px 0;
 	}
 	.article>.articleContent{
-		/*line-height:35px;*/
+		line-height:1.7em;
 		margin:20px 0;
 	}
-	.article>.articleTag{
+	.article .articleTag{
 		
 		overflow:hidden;
 	}
@@ -63,12 +64,21 @@
 </style>
 
 <div class="article">
-	<div class="articleTitle">
-		<%= article.title %>
-	</div>
-	<div class="articleTag">
-		<div style="float:left;color:#D26900;"><%= article.tags %></div>
-		<div style="float:right; margin-right:2px;"><%= article.time.minute %></div>
+	<div style="background-color:#CCC; padding:10px;">
+		<% if(user && user.name === bloger) { %>
+			<div>
+				<a href="#">编辑</a>|
+				<a onclick="">修改分类</a>|
+				<a data-name="<%= article.time.minute %>" onclick="removeArticle(this);">删除</a>
+			</div>
+		<% } %>
+		<div class="articleTitle">
+			<%= article.title %>
+		</div>
+		<div class="articleTag">	
+			<div style="float:left;color:#D26900;"><%= article.tags %></div>
+			<div style="float:right; margin-right:2px;"><%= article.time.minute %>(分类:<span style="color:#D26900;"><%= article.category%></span>)</div>
+		</div>
 	</div>
 	<div class="articleContent">
 		<%- article.content %>
@@ -121,37 +131,63 @@
 	                <input type="submit" class="blogBtn blogBtn-primary" onclick="addComment();" value="发表">
 	            </div>
 	        </div>
-	        <script type="text/javascript">
-				function addComment() {
-					<% if(user && user.name != bloger) { %>
-						var content = $('#txtContent').val();
-						if(!content) {
-							alert("请输入评论内容");
-							return;
-						}
-						
-						$.ajax({
-							url: "/showArticle/u/<%= bloger %>/<%= article.time.day %>/<%= article.title %>",
-							type: "POST",
-							data: {
-								name: "<%= user.name %>",
-								head: "<%= user.head %>",
-								content: content
-							},
-							success: function(msg){  
-								if(msg == "error")
-									alert("发表评论异常");  
-								else if(msg == "success") {
-									$('#txtContent').val('');
-									var date = new Date();
-				        			var time = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
-									$('#commentLists').append('<div class="commentList"><div class="commentImg"><a href="/masterHome/u/<%=user.name %>"><img src="/<%=user.head %>" alt="头像" width="50" height="50"/></a></div><div class="commentInfo"><div class="commentND"><div class="commentName"><span>'+'<%=user.name %></span></div><div class="commentDate"><span>'+time+'</span></div></div><div class="commentDetail"><div class="commentContent"><span>'+content+'</span></div></div></div></div>');
-								}  
-							}
-						});
-					<% } %>
-				}
-				</script>
+
         <% } %>
      </div>
+     <script type="text/javascript">
+		function addComment() {
+			<% if(user && user.name != bloger) { %>
+				var content = $('#txtContent').val();
+				if(!content) {
+					alert("请输入评论内容");
+					return;
+				}
+				
+				$.ajax({
+					url: "/showArticle/u/<%= bloger %>/<%= article.time.day %>/<%= article.title %>",
+					type: "POST",
+					data: {
+						name: "<%= user.name %>",
+						head: "<%= user.head %>",
+						content: content
+					},
+					success: function(msg){  
+						if(msg == "error")
+							alert("发表评论异常");  
+						else if(msg == "success") {
+							$('#txtContent').val('');
+							var date = new Date();
+		        			var time = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
+							$('#commentLists').append('<div class="commentList"><div class="commentImg"><a href="/masterHome/u/<%=user.name %>"><img src="/<%=user.head %>" alt="头像" width="50" height="50"/></a></div><div class="commentInfo"><div class="commentND"><div class="commentName"><span>'+'<%=user.name %></span></div><div class="commentDate"><span>'+time+'</span></div></div><div class="commentDetail"><div class="commentContent"><span>'+content+'</span></div></div></div></div>');
+						}  
+					}
+				});
+			<% } %>
+		}
+
+		function removeArticle(article) {
+	    	<% if(user && user.name === bloger) { %>
+				var oA = $(article);
+				if(confirm("确定要删除？ 若删除，则无法恢复。")) {
+		    		$.ajax({
+		    			url: "/masterHome/u/<%= user.name %>",
+		    			type: "DELETE",
+		    			data: {
+		    				minute: oA.attr('data-name')
+		    			},
+		    			success: function(msg){
+		        			if(msg === "donotexist")
+		    					alert("文章不存在");  
+		    				else if(msg === "error")
+		    					alert("删除异常");
+		    				else if(msg === "success") {
+		    					//oA.parentsUntil('div.articleList').parent().remove();
+		    					window.location.href="/masterHome/u/<%= user.name %>";
+		    				}
+		        		}
+		    		});
+				}
+			<% } %>
+	    }
+	</script>
 </div>

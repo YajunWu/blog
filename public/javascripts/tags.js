@@ -1,4 +1,4 @@
-var radius = 90;
+var radius = 65;
 var dtr = Math.PI / 180;
 var d = 200;
 var mcList = [];
@@ -137,7 +137,7 @@ function positionAll(){
         mcList[i - 1].cx = radius * Math.cos(theta) * Math.sin(phi);
         mcList[i - 1].cy = radius * Math.sin(theta) * Math.sin(phi);
         mcList[i - 1].cz = radius * Math.cos(phi);
-        aA[i - 1].style.left = mcList[i - 1].cx + oDiv.offsetWidth / 2 - mcList[i - 1].offsetWidth / 2 + "px";
+        aA[i - 1].style.left = mcList[i - 1].cx + oDiv.offsetWidth / 2 + 18 - mcList[i - 1].offsetWidth / 2 + "px";
         aA[i - 1].style.top = mcList[i - 1].cy + oDiv.offsetHeight / 2 - mcList[i - 1].offsetHeight / 2 + "px"
     }
 }
@@ -146,7 +146,7 @@ function doPosition(){
     var l = oDiv.offsetWidth / 2;
     var t = oDiv.offsetHeight / 2;
     for (var i = 0; i < mcList.length; i++) {
-        aA[i].style.left = mcList[i].cx + l - mcList[i].offsetWidth / 2 + "px";
+        aA[i].style.left = mcList[i].cx + l - mcList[i].offsetWidth / 2 + 18 + "px";
         aA[i].style.top = mcList[i].cy + t - mcList[i].offsetHeight / 2 + "px";
         aA[i].style.fontSize = Math.ceil(12 * mcList[i].scale / 2) + 6 + "px";
         aA[i].style.filter = "alpha(opacity=" + 100 * mcList[i].alpha + ")";

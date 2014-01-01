@@ -22,9 +22,7 @@
 
 	</div>	
 
-	<div class="goTop">
-		<img src='/images/gotop.png'/>
-	</div>
+	<div class="goTop">	</div>
 	<div id="header">
 		<div id="topBox">
 			<span id="title">荷花池</span>
@@ -163,11 +161,41 @@
 		</div>
 		<div id="footer">
 			<span>Copyright © yajun Wu 2013   |
-				<a>Contact</a>|
-				<a>Login</a>
+				<a>Contact</a>
+				<% if(!user) { %>
+					|<a href="/login">Login</a>
+				<% } %>
 			</span>
 		</div>
 	</div>
 	
 	<script type="text/javascript" src="/javascripts/tags.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		
+		window.onscroll = function() {  
+            var top = document.documentElement.scrollTop || document.body.scrollTop;  
+            if(top > 0) {
+				$(".goTop").show();
+			} else
+				$(".goTop").hide();
+        };
+		
+        $(".goTop").click(function pageScroll() {
+    		var top = document.documentElement.scrollTop || document.body.scrollTop; 
+			window.scrollBy(0,-30);
+			if(top > 30) {
+				setTimeout(pageScroll,10);
+			}
+		});
+
+		$(".goTop").bind('mouseover', function() {
+    		$(".goTop").css('backgroundImage', 'url("/images/gotop1.png")');
+    	});
+
+    	$(".goTop").bind('mouseout', function() {
+    		$(".goTop").css('backgroundImage', 'url("/images/gotop.png")');
+    	});
+	});
+	</script>
   </body>

@@ -1,6 +1,8 @@
 
 a {
 	color: #00B7FF;
+	text-decoration: none;
+	cursor: pointer;
 }
 .blogBtn{
 	background-color:#999999;
@@ -53,11 +55,12 @@ input[type='text']{
 }
 body{
 	background-color:#E6E6E6;
-	font-family:Arial;
-	font-size: 22px;
+	font-family:Tahoma,Verdana,STHeiTi,simsun,sans-serif;
+	font-size: 18px;
 	margin:0px;
 	padding:0px;
 	color:#111111;
+	word-wrap:break-word;
 }
 #publishTag{
 	position:fixed;
@@ -79,7 +82,7 @@ body{
 }
 #mainBody{
 	margin:25px auto;
-	width:50em;
+	width:1100px;
 	overflow:hidden;
 }
 #leftBody{
@@ -88,7 +91,7 @@ body{
 }
 #rightBody{
 	float:right;
-	width:25%;
+	width:280px;
 }
 #footer{
 	clear:both;
@@ -97,14 +100,19 @@ body{
 	padding-top:20px;
 }
 .goTop{
+	background: url('/images/gotop.png') no-repeat;
+	height: 40px;
+	width:40px;
 	position:fixed;
 	bottom:10%;
-	right:5%
+	right:3%;
+	display: none;
+	cursor:pointer;
 }
 #topBox{
 	margin:0 auto;
 	padding:8px 0;
-	width:50em;
+	width:1100px;
 }
 #title{
 	font-size:50px;
@@ -122,7 +130,7 @@ ul.horizontalMenu>li{
 	float:left;
 	height:100px;
 	font-size:30px;
-	width:24.5%;
+	width:24.7%;
 	border:1px solid #E6E6E6;
 	
 }
@@ -182,7 +190,7 @@ ul.horizontalMenu>li.active>a>span.liDisable{
 	width:100%;
 	min-height:80px;
 	/*border:1px solid #B0B0B0;*/
-	margin:50px 0;
+	margin:30px 0;
 	padding:0;
 }
 .statLink>.statLink-title{
@@ -207,21 +215,24 @@ ul.horizontalMenu>li.active>a>span.liDisable{
 	margin:30px 0;
 	padding:15px 20px;
 	background-color:#FFFFFF;
+	font-size: 16px;
 }
 .articleList>.article-title{
-	font-size:24px;
 	font-weight:bolder;
-	line-height:30px;
+	line-height: 24px;
 	margin-bottom:5px;
+	white-space: nowrap;
 }
 .articleList>.article-tag span{
 	color:#D26900;
 }
 .articleList>.article-content{
-	height:95px;
-	line-height:35px;
-	margin:20px 0;
-	overflow:hidden;
+	line-height: 1.5em;
+	margin:18px 0;
+	color: #333;
+}
+.articleList>.article-info{
+	color:#777;
 }
 .dlMessage{
 	margin:30px 0;
@@ -272,8 +283,10 @@ ul.horizontalMenu>li.active>a>span.liDisable{
 #divTagCloud{
 	position:relative; 
 	width:98%; 
-	height:220px; 
+	height:160px; 
 	margin: 10px auto; 
+	overflow: hidden;
+	padding-left: 10px;
 }
 #divTagCloud>a{
 	position:absolute; 
